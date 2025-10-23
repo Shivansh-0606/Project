@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sample Page</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; }
+    label { display:block; margin-top:8px; }
+    input { margin-right:8px; }
+    pre { background:#f5f5f5; padding:12px; }
+  </style>
+</head>
+<body>
+  <h1>Sample HTML</h1>
+  <p>Minimal page with a form and client-side handling.</p>
+
+  <form id="demoForm">
+    <label for="name">Name:</label>
+    <input id="name" name="name" required>
+    <button type="submit">Send</button>
+  </form>
+
+  <pre id="output"></pre>
+
+  <script>
+    document.getElementById('demoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      document.getElementById('output').textContent = 'Hello, ' + name;
+
+      // To send data to a Python backend (e.g., FastAPI/Flask) at POST /api:
+      // const res = await fetch('/api', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ name })
+      // });
+      // const data = await res.json();
+      // document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
