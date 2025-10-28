@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w-full max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Doctors' Dashboard</h1>
+            <p class="text-gray-600">Welcome {{ doctor.name }}</p> <!-- Dynamic name -->
+        </div>
+        <a href="{{ url_for('logout') }}"
+           class="bg-red-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-600 transition duration-200">
+           Logout
+        </a>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Left Column -->
+        <div class="space-y-6">
+            <!-- Upcoming Appointments -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Upcoming Appointments</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max text-left">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="p-2">Sr.No</th>
+                                <th class="p-2">Patient</th>
+                                <th class="p-2">Status</th>
+                                <th class="p-2 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments %}
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-2">{{ appt.id }}</td>
+                                <td class="p-2">{{ appt.patient_rel.name if appt.patient_rel else 'N/A' }}</td>
+                                <td class="p-2">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">{{ appt.status }}</span>
+                                </td>
+                                <td class="p-2 text-right space-x-2">
+                                    <!-- Link to update history -->
+                                    <a href="{{ url_for('update_history', appointment_id=appt.id) }}" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">view details</a>
+                                    
+                                    <!-- Form to complete appointment -->
+                                    <form action="{{ url_for('complete_appointment', appointment_id=appt.id) }}" method="POST" class="inline">
+                                        <button type="submit" class="text-sm bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">update as complete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="4" class="p-2 text-center text-gray-500">No appointments found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Assigned Patients -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Assigned Patients</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max text-left">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="p-2">Sr.No</th>
+                                <th class="p-2">Name</th>
+                                <th class="p-2 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-2">{{ patient.id }}</td>
+                                <td class="p-2">{{ patient.name }}</td>
+                                <td class="p-2 text-right">
+                                    <button class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">view details</body >
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="p-2 text-center text-gray-500">No patients found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="space-y-6">
+            <!-- Update Patient History (Removed - now on its own page) -->
+            
+            <!-- Doctor's Availability -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Doctor's Availability</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max text-left">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="p-2">Date</th>
+                                <th class="p-2">Morning</th>
+                                <th class="p-2">Evening</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for avail in availability %}
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-2">{{ avail.date }}</td>
+                                <td class="p-2"><span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">{{ avail.start_time }}</span></td>
+                                <td class="p-2"><span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">{{ avail.end_time }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                     <!-- Link to manage availability page -->
+                     <a href="{{ url_for('manage_availability') }}"
+                            class="block text-center w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
+                        Add/Edit Availability
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Placeholder for the "Update History" form that was here -->
+             <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Update Patient History</h2>
+                <p class="text-gray-600">Select an appointment from the "Upcoming Appointments" list to update a patient's history.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
