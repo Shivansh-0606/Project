@@ -1,0 +1,14 @@
+# Ignores the virtual environment folder
+venv/
+
+# Ignores all compiled Python files
+__pycache__/
+
+# Ignores your SQLite database file
+# (You might want to commit a *starter* db, but
+# you usually don't want to commit the *live* one.)
+*.db
+
+# !! THE MOST IMPORTANT ONE !!
+# Ignores your secret key file
+.env
