@@ -1,14 +1,9 @@
-# File: /project_folder/forms.py
-# (Replaces your entire old forms.py file)
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, TextAreaField
 from wtforms.fields import DateField, TimeField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from models import User, Department
 from datetime import date
-
-# ... (RegistrationForm, LoginForm, AddDoctorForm, UpdateDoctorForm, BookingForm, TreatmentForm are all here... no changes) ...
 
 class RegistrationForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=100)])

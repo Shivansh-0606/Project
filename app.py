@@ -8,16 +8,14 @@ import os
 from dotenv import load_dotenv
 import json
 from datetime import date
-import datetime  # Added for the context processor
+import datetime 
 from sqlalchemy import or_
 
 load_dotenv()
 
 # --- APP CONFIGURATION ---
-app = Flask(__name__)
-# We use the hardcoded key for now to ensure it works.
-# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') 
-app.config['SECRET_KEY'] = 'f8e3a2c5d1b74a0e9f8d7c6b5a4f3e2d' # Hardcoded fix
+app = Flask(__name__) 
+app.config['SECRET_KEY'] = 'f8e3a2c5d1b74a0e9f8d7c6b5a4f3e2d'
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'hospital.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -157,7 +155,7 @@ def admin_dashboard():
 @admin_required
 def admin_manage_doctors():
     """READ: Display all doctor profiles, with search."""
-    q = request.args.get('q') # Get search query from URL
+    q = request.args.get('q') 
     
     if q:
         # If there is a search, filter by name OR department name
@@ -168,16 +166,16 @@ def admin_manage_doctors():
             )
         )
     else:
-        # If no search, get all doctors
+
         query = Doctor.query
         
     doctors = query.all()
     
-    # Path uses admin/ subfolder
+    #Path is used by admin/subfolder
     return render_template('admin/manage_doctors.html',
                            title='Manage Doctors',
                            doctors=doctors,
-                           search_query=q) # Pass the query back
+                           search_query=q) 
 
 @app.route('/admin/add_doctor', methods=['GET', 'POST'])
 @admin_required
@@ -199,7 +197,7 @@ def admin_add_doctor():
         db.session.commit()
         flash(f'Doctor {form.name.data} has been added.', 'success')
         return redirect(url_for('admin_manage_doctors'))
-    # Path uses admin/ subfolder
+    # Path used by admin/ subfolder
     return render_template('admin/add_doctor.html', title='Add Doctor', form=form)
 
 @app.route('/admin/edit_doctor/<int:doctor_id>', methods=['GET', 'POST'])
@@ -219,7 +217,7 @@ def admin_edit_doctor(doctor_id):
         form.name.data = doctor.user.name
         form.email.data = doctor.user.email
         form.department.data = doctor.department_id
-    # Path uses admin/ subfolder
+    # Path used by admin/ subfolder
     return render_template('admin/edit_doctor.html', title='Edit Doctor', form=form, doctor=doctor)
 
 @app.route('/admin/deactivate_doctor/<int:user_id>', methods=['POST'])
@@ -253,7 +251,7 @@ def admin_manage_patients():
     q = request.args.get('q')
     
     if q:
-        # Search by name, email, or contact phone
+        # search patients by name, email, or contact phone
         query = Patient.query.join(User).filter(
             or_(
                 User.name.ilike(f'%{q}%'),
@@ -352,7 +350,7 @@ def doctor_manage_availability():
     form = UpdateAvailabilityForm()
 
     if form.validate_on_submit():
-        # User is submitting the form
+        # User is submitting the form, save the data
         availability_dict = {
             'Monday': form.monday.data,
             'Tuesday': form.tuesday.data,
@@ -362,14 +360,14 @@ def doctor_manage_availability():
             'Saturday': form.saturday.data,
             'Sunday': form.sunday.data
         }
-        # Convert dict to JSON string and save
+        # Convert dict to JSON string for storage
         doctor.availability = json.dumps(availability_dict)
         db.session.commit()
         flash('Your availability has been updated.', 'success')
         return redirect(url_for('doctor_dashboard'))
     
     elif request.method == 'GET':
-        # User is loading the page, pre-fill with saved data
+        # User is loading the page, pre-fill form with existing data
         data = doctor.availability_data
         form.monday.data = data.get('Monday', 'Not Available')
         form.tuesday.data = data.get('Tuesday', 'Not Available')
@@ -486,7 +484,7 @@ def patient_view_treatment(appointment_id):
 # --- API ENDPOINTS (FULL CRUD) ---
 
 @app.route('/api/doctors', methods=['GET', 'POST'])
-@login_required # Require ALL API access to be by a logged-in user
+@login_required 
 def api_doctors():
     
     # --- METHOD 1: GET (Read All) ---
@@ -504,7 +502,7 @@ def api_doctors():
 
     # --- METHOD 2: POST (Create) ---
     if request.method == 'POST':
-        # Only admins can create doctors
+        # Doctors are created by admins only
         if current_user.role != 'admin':
             return jsonify(error='Forbidden. Admin access required.'), 403
             
@@ -599,11 +597,10 @@ def api_single_doctor(doctor_id):
         if current_user.role != 'admin':
             return jsonify(error='Forbidden. Admin access required.'), 403
         
-        # We use our safe "deactivate" logic
+        # Soft delete: deactivate the user
         doctor.user.is_active = False
         db.session.commit()
         
-        # 204 = No Content (success, but nothing to return)
         return '', 204
         
 # --- RUN SCRIPT ---

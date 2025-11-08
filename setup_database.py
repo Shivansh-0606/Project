@@ -1,10 +1,9 @@
-from app import app, db  # Import the app and db from your app.py
-from models import User, Department # Import User model
+from app import app, db # Import the app and database
+from models import User, Department # Import User model to create admin user
 from werkzeug.security import generate_password_hash
 import os
 
 # --- SETTINGS ---
-# !! CHANGE THIS in a real app !!
 ADMIN_EMAIL = 'admin@hospital.com'
 ADMIN_PASSWORD = 'admin123'
 # --- END SETTINGS ---
@@ -12,8 +11,7 @@ ADMIN_PASSWORD = 'admin123'
 def create_initial_data():
     """Creates the database tables and a default admin user."""
     
-    # This 'with' block ensures we are in the 'application context'
-    # SQLAlchemy needs this to know which app (and thus, which db) to talk to
+    # SQLAlchemy needs the app context to work properly
     with app.app_context():
         
         print("Creating database tables...")
@@ -39,7 +37,6 @@ def create_initial_data():
             print("Admin user already exists.")
 
         # --- Create Sample Departments ---
-        # (Optional, but good for testing)
         if not Department.query.first():
             print("Creating sample departments...")
             depts = [
@@ -64,9 +61,8 @@ def create_initial_data():
 
 # This makes the script runnable directly
 if __name__ == '__main__':
-    # Check if the database file already exists
+    # Check for existing database file to avoid overwriting
     if os.path.exists('hospital.db'):
         print('Database file "hospital.db" already exists.')
-        # You could add a prompt here to ask the user if they want to recreate it
     
     create_initial_data()
