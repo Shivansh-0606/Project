@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Patients{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Manage Patients</h1>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('admin_manage_patients') }}">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search by name, email, or phone..." value="{{ search_query or '' }}">
+                <button class="btn btn-outline-secondary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                {% if search_query %}
+                <a href="{{ url_for('admin_manage_patients') }}" class="btn btn-outline-danger" title="Clear Search">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Patient List</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Date of Birth</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pat in patients %}
+                <tr class="align-middle">
+                    <td><strong>{{ pat.user.name }}</strong></td>
+                    <td>{{ pat.user.email }}</td>
+                    <td>{{ pat.contact_phone or 'N/A' }}</td>
+                    <td>{{ pat.dob or 'N/A' }}</td>
+                    <td>
+                        {% if pat.user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted p-4">No patients found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

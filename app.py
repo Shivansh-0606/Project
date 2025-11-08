@@ -3,22 +3,21 @@ from functools import wraps
 from extensions import db, login_manager
 from models import User, Doctor, Patient, Appointment, Treatment, Department, load_user
 from flask_wtf.csrf import CSRFProtect
-from forms import (
-    LoginForm, RegistrationForm, AddDoctorForm,
-    UpdateDoctorForm, BookingForm, TreatmentForm, UpdateAvailabilityForm
-)
 from flask_login import login_user, logout_user, login_required, current_user
 import os
 from dotenv import load_dotenv
 import json
 from datetime import date
+import datetime  # Added for the context processor
 from sqlalchemy import or_
 
 load_dotenv()
 
 # --- APP CONFIGURATION ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# We use the hardcoded key for now to ensure it works.
+# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') 
+app.config['SECRET_KEY'] = 'f8e3a2c5d1b74a0e9f8d7c6b5a4f3e2d' # Hardcoded fix
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'hospital.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -29,7 +28,13 @@ login_manager.init_app(app)
 login_manager.user_loader(load_user)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
-csrf = CSRFProtect(app)  # ✅ This is the correct and only place it should be
+csrf = CSRFProtect(app)
+
+# --- IMPORT FORMS (AFTER CONFIG) ---
+from forms import (
+    LoginForm, RegistrationForm, AddDoctorForm,
+    UpdateDoctorForm, BookingForm, TreatmentForm, UpdateAvailabilityForm
+)
 
 # --- HELPER DECORATORS ---
 def admin_required(f):
@@ -61,6 +66,12 @@ def doctor_required(f):
             return redirect(url_for('dashboard_redirect'))
         return f(*args, **kwargs)
     return decorated_function
+
+# --- INJECT CONTEXT ---
+@app.context_processor
+def inject_current_year():
+    """Injects the current year into all templates."""
+    return {'current_year': datetime.date.today().year}
 
 # --- AUTHENTICATION ROUTES ---
 @app.route('/register', methods=['GET', 'POST'])
@@ -114,7 +125,8 @@ def logout():
 # --- CORE APP ROUTES ---
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Added title here
+    return render_template('index.html', title='Welcome')
 
 @app.route('/dashboard')
 @login_required
@@ -137,6 +149,7 @@ def admin_dashboard():
     doctor_count = Doctor.query.count()
     patient_count = Patient.query.count()
     appointment_count = Appointment.query.count()
+    # Path uses admin/ subfolder
     return render_template('admin/dashboard.html', title='Admin Dashboard',
                            doctor_count=doctor_count, patient_count=patient_count,
                            appointment_count=appointment_count)
@@ -160,6 +173,7 @@ def admin_manage_doctors():
         
     doctors = query.all()
     
+    # Path uses admin/ subfolder
     return render_template('admin/manage_doctors.html',
                            title='Manage Doctors',
                            doctors=doctors,
@@ -185,6 +199,7 @@ def admin_add_doctor():
         db.session.commit()
         flash(f'Doctor {form.name.data} has been added.', 'success')
         return redirect(url_for('admin_manage_doctors'))
+    # Path uses admin/ subfolder
     return render_template('admin/add_doctor.html', title='Add Doctor', form=form)
 
 @app.route('/admin/edit_doctor/<int:doctor_id>', methods=['GET', 'POST'])
@@ -204,6 +219,7 @@ def admin_edit_doctor(doctor_id):
         form.name.data = doctor.user.name
         form.email.data = doctor.user.email
         form.department.data = doctor.department_id
+    # Path uses admin/ subfolder
     return render_template('admin/edit_doctor.html', title='Edit Doctor', form=form, doctor=doctor)
 
 @app.route('/admin/deactivate_doctor/<int:user_id>', methods=['POST'])
@@ -250,16 +266,13 @@ def admin_manage_patients():
         
     patients = query.all()
     
-    # Your friend will create 'admin/manage_patients.html'
+    # Path uses admin/ subfolder
     return render_template('admin/manage_patients.html',
                            title='Manage Patients',
                            patients=patients,
                            search_query=q)
 
-
 # --- DOCTOR ROUTES ---
-# ... (doctor_dashboard, complete_appointment, cancel_appointment, doctor_patient_history routes are here... no changes) ...
-
 @app.route('/doctor/dashboard')
 @doctor_required
 def doctor_dashboard():
@@ -278,6 +291,7 @@ def doctor_dashboard():
         Appointment.doctor_id == doctor.id, Appointment.status == 'Completed'
     ).join(Patient).join(User).order_by(Appointment.appointment_date.desc()).all()
     form = TreatmentForm()
+    # Path uses doctor/ subfolder
     return render_template('doctor/dashboard.html', title='Doctor Dashboard',
                            todays_appts=todays_appts, upcoming_appts=upcoming_appts,
                            completed_appts=completed_appts, form=form)
@@ -321,15 +335,15 @@ def cancel_appointment(appointment_id):
 @app.route('/doctor/patient_history/<int:patient_id>')
 @doctor_required
 def doctor_patient_history(patient_id):
-    patient = Patient.query.get_or_404(patient_id) # Corrected 404
+    patient = Patient.query.get_or_404(patient_id)
     completed_appts = Appointment.query.filter_by(
         patient_id=patient.id, status='Completed'
     ).join(Treatment).order_by(Appointment.appointment_date.desc()).all()
+    # Path uses doctor/ subfolder
     return render_template('doctor/patient_history.html',
                            title=f"History for {patient.user.name}",
                            patient=patient, appointments=completed_appts)
 
-# --- THIS ROUTE IS NEW ---
 @app.route('/doctor/availability', methods=['GET', 'POST'])
 @doctor_required
 def doctor_manage_availability():
@@ -365,13 +379,12 @@ def doctor_manage_availability():
         form.saturday.data = data.get('Saturday', 'Not Available')
         form.sunday.data = data.get('Sunday', 'Not Available')
 
-    # Your friend will create 'doctor/manage_availability.html'
+    # Path uses doctor/ subfolder
     return render_template('doctor/manage_availability.html',
                            title='Manage Availability',
                            form=form)
 
 # --- PATIENT ROUTES ---
-# ... (All your patient/dashboard, patient/view_doctors, etc. routes are here... no changes) ...
 @app.route('/patient/dashboard')
 @patient_required
 def patient_dashboard():
@@ -388,6 +401,7 @@ def patient_dashboard():
                 upcoming_appointments.append(appt)
             else:
                 past_appointments.append(appt)
+    # Path uses patient/ subfolder
     return render_template('patient/dashboard.html', title='Patient Dashboard',
                            departments=departments, upcoming_appts=upcoming_appointments,
                            past_appts=past_appointments)
@@ -417,6 +431,7 @@ def patient_view_doctors():
         
     doctors = query.all()
     
+    # Path uses patient/ subfolder
     return render_template('patient/view_doctors.html',
                            title='View Doctors',
                            doctors=doctors,
@@ -450,6 +465,7 @@ def book_appointment(doctor_id):
         db.session.commit()
         flash(f'Appointment booked with Dr. {doctor.user.name} on {date} at {time}.', 'success')
         return redirect(url_for('patient_dashboard'))
+    # Path uses patient/ subfolder
     return render_template('patient/book_appointment.html',
                            title='Book Appointment', form=form, doctor=doctor)
 
@@ -463,6 +479,7 @@ def patient_view_treatment(appointment_id):
     if not appointment.treatment:
         flash('Treatment details are not yet available for this appointment.', 'info')
         return redirect(url_for('patient_dashboard'))
+    # Path uses patient/ subfolder
     return render_template('patient/view_treatment.html',
                            title='View Treatment', appointment=appointment)
 
@@ -578,7 +595,6 @@ def api_single_doctor(doctor_id):
         })
 
     # --- METHOD 5: DELETE (Delete) ---
-    # (We actually have 5 methods now, bonus points!)
     if request.method == 'DELETE':
         if current_user.role != 'admin':
             return jsonify(error='Forbidden. Admin access required.'), 403
@@ -594,4 +610,3 @@ def api_single_doctor(doctor_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-    # The redundant csrf = CSRFProtect(app) line was here and has been removed.

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}View Doctors{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Find a Doctor</h1>
+    <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('patient_view_doctors') }}">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search by doctor name or department..." value="{{ search_query or '' }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                {% if search_query or request.args.get('dept_id') %}
+                <a href="{{ url_for('patient_view_doctors') }}" class="btn btn-outline-danger" title="Clear Search">
+                    <i class="bi bi-x-lg"></i> Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% if doctors %}
+        {% for doc in doctors %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Dr. {{ doc.user.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ doc.department.name }}</h6>
+
+                    <div class="mt-3">
+                        <small class="text-uppercase fw-bold text-muted">Availability</small>
+                        <ul class="list-group list-group-flush list-group-small" style="font-size: 0.9em;">
+                            {% for day, time in doc.availability_data.items() %}
+                                {% if time != 'Not Available' and time != 'Not set' %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                                    <strong>{{ day }}</strong>
+                                    <span>{{ time }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 p-3">
+                    <a href="{{ url_for('book_appointment', doctor_id=doc.id) }}" class="btn btn-primary w-100">
+                        <i class="bi bi-calendar-plus"></i> Book Appointment
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="card card-body text-center">
+                <p class="text-muted m-0">No doctors found matching your criteria. Please try a different search or clear your filters.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

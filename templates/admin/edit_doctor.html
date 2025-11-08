@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Doctor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="card-title text-center mb-4">Edit Doctor Profile</h2>
+                <h5 class="text-center text-muted mb-4">{{ doctor.user.name }}</h5>
+
+                <form method="POST" action="{{ url_for('admin_edit_doctor', doctor_id=doctor.id) }}" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {% if form.name.errors %}
+                            {{ form.name(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class="form-control") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.department.label(class="form-label") }}
+                        {% if form.department.errors %}
+                            {{ form.department(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.department.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.department(class="form-select") }}
+                        {% endif %}
+                    </div>
+
+                    <p class="text-muted"><small>To reset a doctor's password, please use a separate "Forgot Password" flow (not implemented).</small></p>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin_manage_doctors') }}" class="btn btn-outline-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

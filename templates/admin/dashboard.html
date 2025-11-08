@@ -1,164 +1,78 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="w-full max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-            <p class="text-gray-600">Welcome Admin</p>
-        </div>
-        <a href="{{ url_for('logout') }}"
-           class="bg-red-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-600 transition duration-200">
-           Logout
-        </a>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Admin Dashboard</h1>
+    <span class="text-muted">Welcome, {{ current_user.name }}!</span>
+</div>
 
-    <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Left Column (Doctors & Patients) -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Registered Doctors -->
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Registered Doctors</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-max text-left">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="p-2">Name</th>
-                                <th class="p-2">Department</th>
-                                <th class="p-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for doctor in doctors %}
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2">{{ doctor.name }}</td>
-                                <td class="p-2">{{ doctor.department.name if doctor.department else 'N/A' }}</td>
-                                <td class="p-2 text-right space-x-2">
-                                    <button class="text-sm bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600">update</button>
-                                    
-                                    <!-- Delete Doctor Form -->
-                                    <form action="{{ url_for('delete_doctor', doctor_id=doctor.id) }}" method="POST" class="inline">
-                                        <button type="submit" class="text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">delete</button>
-                                    </form>
-                                    
-                                    <button class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">schedule</button>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr><td colspan="3" class="p-2 text-center text-gray-500">No doctors found.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Registered Patients -->
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Registered Patients</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-max text-left">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="p-2">Name</th>
-                                <th class="p-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for patient in patients %}
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2">{{ patient.name }}</td>
-                                <td class="p-2 text-right space-x-2">
-                                    <!-- Delete Patient Form -->
-                                    <form action="{{ url_for('delete_patient', patient_id=patient.id) }}" method="POST" class="inline">
-                                        <button type="submit" class="text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">delete</button>
-                                    </form>
-                                    <button class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">view hist</button>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr><td colspan="2" class="p-2 text-center text-gray-500">No patients found.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Upcoming Appointments -->
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Upcoming Appointments</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-max text-left">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="p-2">Sr.No</th>
-                                <th class="p-2">Doctor</th>
-                                <th class="p-2">Patient</th>
-                                <th class="p-2">Department</th>
-                                <th class="p-2">Date</th>
-                                <th class="p-2">Time</th>
-                                <th class="p-2 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for appt in appointments %}
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2">{{ appt.id }}</td>
-                                <td class="p-2">{{ appt.doctor_rel.name if appt.doctor_rel else 'N/A' }}</td>
-                                <td class="p-2">{{ appt.patient_rel.name if appt.patient_rel else 'N/A' }}</td>
-                                <td class="p-2">{{ appt.doctor_rel.department.name if appt.doctor_rel and appt.doctor_rel.department else 'N/A' }}</td>
-                                <td class="p-2">{{ appt.date }}</td>
-                                <td class="p-2">{{ appt.time }}</td>
-                                <td class="p-2 text-right">
-                                    <button class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">view</button>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr><td colspan="7" class="p-2 text-center text-gray-500">No appointments found.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="fs-1">
+                        <i class="bi bi-person-lines-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title text-end">Total Doctors</h5>
+                        <p class="card-text fs-2 text-end">{{ doctor_count }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Right Column (Add Doctor) -->
-        <div class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-4">Add a new Doctor</h2>
-                <!-- Add Doctor Form -->
-                <form action="{{ url_for('add_doctor') }}" method="POST" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Full name</label>
-                        <input type="text" name="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="fs-1">
+                        <i class="bi bi-people-fill"></i>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Username</label>
-                        <input type="text" name="username" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <h5 class="card-title text-end">Total Patients</h5>
+                        <p class="card-text fs-2 text-end">{{ patient_count }}</p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Department</label>
-                        <select name="department_id" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            <option value="" disabled selected>Select Department</option>
-                            {% for dept in departments %}
-                            <option value="{{ dept.id }}">{{ dept.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit"
-                            class="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200">
-                        Create
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
-        
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="fs-1">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title text-end">Total Appointments</h5>
+                        <p class="card-text fs-2 text-end">{{ appointment_count }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Management Links</h5>
+    </div>
+    <div class="list-group list-group-flush">
+        <a href="{{ url_for('admin_manage_doctors') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <span>
+                <i class="bi bi-person-lines-fill me-2"></i> Manage Doctors
+            </span>
+            <i class="bi bi-chevron-right"></i>
+        </a>
+        <a href="{{ url_for('admin_manage_patients') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <span>
+                <i class="bi bi-people-fill me-2"></i> Manage Patients
+            </span>
+            <i class="bi bi-chevron-right"></i>
+        </a>
     </div>
 </div>
 {% endblock %}

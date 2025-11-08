@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}View Treatment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h2">Treatment Details</h1>
+            <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Appointment on {{ appointment.appointment_date.strftime('%B %d, %Y') }}</h5>
+                        <small class="text-muted">with Dr. {{ appointment.doctor.user.name }}</small>
+                    </div>
+                    <span class="badge bg-success fs-6">Completed</span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h5 class="text-primary"><i class="bi bi-clipboard-pulse"></i> Diagnosis</h5>
+                    <p class="bg-light p-3 rounded">{{ appointment.treatment.diagnosis | nl2br }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-primary"><i class="bi bi-capsule-pill"></i> Prescription</h5>
+                    <p class="bg-light p-3 rounded">{{ appointment.treatment.prescription | nl2br or 'No prescription provided.' }}</p>
+                </div>
+
+                <div>
+                    <h5 class="text-primary"><i class="bi bi-journal-text"></i> Doctor's Notes</h5>
+                    <p class="bg-light p-3 rounded">{{ appointment.treatment.notes | nl2br or 'No additional notes.' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

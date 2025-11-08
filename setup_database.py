@@ -6,7 +6,7 @@ import os
 # --- SETTINGS ---
 # !! CHANGE THIS in a real app !!
 ADMIN_EMAIL = 'admin@hospital.com'
-ADMIN_PASSWORD = 'admin_password123'
+ADMIN_PASSWORD = 'admin123'
 # --- END SETTINGS ---
 
 def create_initial_data():

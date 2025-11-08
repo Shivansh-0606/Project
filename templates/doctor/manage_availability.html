@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Availability{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="card-title text-center mb-4">Manage Your Weekly Availability</h2>
+                <p class="text-center text-muted">
+                    Enter your available time slots (e.g., "09:00 AM - 01:00 PM, 02:00 PM - 05:00 PM").
+                    <br>
+                    Use "Not Available" if you are off on that day.
+                </p>
+
+                <form method="POST" action="{{ url_for('doctor_manage_availability') }}" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.monday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.monday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.tuesday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.tuesday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.wednesday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.wednesday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.thursday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.thursday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.friday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.friday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.saturday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.saturday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row align-items-center g-2">
+                                <div class="col-sm-3">
+                                    {{ form.sunday.label(class="form-label mb-0") }}
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.sunday(class="form-control") }}
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

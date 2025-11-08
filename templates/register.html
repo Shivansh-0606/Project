@@ -1,38 +1,86 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Register Form</h2>
-        <p class="text-center text-sm text-gray-500 mb-4">Patients can register here</p>
-        
-        <form method="POST" action="{{ url_for('register') }}" class="space-y-4">
-            <div>
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                <input type="text" id="username" name="username" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="card-title text-center mb-4">Create Your Patient Account</h2>
 
-            <!-- You can add a 'Confirm Password' field here with JavaScript validation -->
-            
-            <button type="submit"
-                    class="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200">
-                Register
-            </button>
-        </form>
-        
-        <p class="text-center text-sm text-gray-600 mt-6">
-            Already have an account? 
-            <a href="{{ url_for('login') }}" class="font-medium text-blue-600 hover:text-blue-500">
-                Login
-            </a>
-        </p>
+                <form method="POST" action="{{ url_for('register') }}" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {% if form.name.errors %}
+                            {{ form.name(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class="form-control", placeholder="Your Full Name") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control", placeholder="name@example.com") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {% if form.password.errors %}
+                                {{ form.password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="form-control", placeholder="Min. 8 characters") }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.confirm_password.label(class="form-label") }}
+                            {% if form.confirm_password.errors %}
+                                {{ form.confirm_password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.confirm_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.confirm_password(class="form-control", placeholder="Confirm Password") }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Already have an account? <a href="{{ url_for('login') }}">Login</a>
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
