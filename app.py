@@ -15,7 +15,7 @@ load_dotenv()
 
 # --- APP CONFIGURATION ---
 app = Flask(__name__) 
-app.config['SECRET_KEY'] = 'f8e3a2c5d1b74a0e9f8d7c6b5a4f3e2d'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'hospital.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
